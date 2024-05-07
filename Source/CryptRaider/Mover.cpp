@@ -24,7 +24,7 @@ void UMover::BeginPlay()
 	Super::BeginPlay();
 
 	OriginalLocation = GetOwner()->GetActorLocation();
-	
+
 }
 
 
@@ -34,50 +34,20 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 
-	FVector CurrentLocation = GetOwner()->GetActorLocation();
-	FVector TargetLocation = OriginalLocation + MoveOffset;
-	float Speed = FVector::Distance(OriginalLocation, TargetLocation) / MoveTime;
-
-
 	if (ShouldMove)
 	{
+		FVector CurrentLocation = GetOwner()->GetActorLocation();
+		FVector TargetLocation = OriginalLocation + MoveOffset;
+		float Speed = FVector::Distance(OriginalLocation, TargetLocation) / MoveTime;
 		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed);
 
 		GetOwner()->SetActorLocation(NewLocation);
+		UE_LOG(LogTemp, Log, TEXT("[Mover] Should move"));
 	}
+}
 
-	APawn* CharacterPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	FVector MyCharacterPosition = CharacterPawn->GetActorLocation();
-	float distanceFromCharacter = FVector::Distance(OriginalLocation, MyCharacterPosition);
-
-
-	//TArray <UActorComponent*> components = CharacterPawn->GetComponentsByClass(UMainCharacter::StaticClass());
-
-	//for (UActorComponent* component : components)
-	//{
-	//	UMainCharacter* MainCharacter = Cast<UMainCharacter>(component);
-	//	if (MainCharacter)
-	//	{
-	//		UE_LOG(LogTemp, Log, TEXT("Found Component"));
-	//	}
-	//}
-
-	if (distanceFromCharacter < 1000)
-	{
-
-	}
-
-	UActorComponent* component =  CharacterPawn->GetComponentByClass(UMainCharacter::StaticClass());
-	if (component)
-	{
-		UMainCharacter* MainCharacter = Cast<UMainCharacter>(component);
-		if (MainCharacter)
-		{
-			MainCharacter->SayHello();
-
-		}
-	}
-
+void UMover::SetShouldMove(bool should)
+{
+	ShouldMove = should;
 }
 
