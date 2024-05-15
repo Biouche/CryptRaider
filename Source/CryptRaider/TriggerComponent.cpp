@@ -16,23 +16,21 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	AActor* acceptableActor = GetAcceptableActor();
-	if (acceptableActor != nullptr)
+	if (acceptableActor)
 	{
 		UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(acceptableActor->GetRootComponent());
 
-		if (comp != nullptr)
+		if (comp)
 		{
 			comp->SetSimulatePhysics(false);
 		}
 		comp->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
 
-		UE_LOG(LogTemp, Log, TEXT("Unlocking"));
-		mover->SetShouldMove(true);
+		mover->SetActive(true);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("Relocking"));
-		mover->SetShouldMove(false);
+		mover->SetActive(false);
 	}
 }
 
@@ -47,8 +45,8 @@ AActor* UTriggerComponent::GetAcceptableActor() const
 	GetOverlappingActors(actors);
 
 	for (AActor* actor : actors)
-	{
-		if (actor->ActorHasTag(UnlockingTag))
+	{ 
+		if (actor->ActorHasTag(UnlockingTag) && !actor->ActorHasTag("Grabbed"))
 		{
 			return actor;
 		}
@@ -57,7 +55,7 @@ AActor* UTriggerComponent::GetAcceptableActor() const
 	return nullptr;
 }
 
-void UTriggerComponent::SetMover(UMover* newMover)
+void UTriggerComponent::SetTriggeredElement(TScriptInterface<IActivableInterface> newMover)
 {
 	mover = newMover;
 }

@@ -30,10 +30,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UPhysicsHandleComponent* physicsHandle = GetPhysicsHandle();
-	if (physicsHandle == nullptr)
-		return;
 
-	if (physicsHandle->GetGrabbedComponent() != nullptr)
+	if (physicsHandle && physicsHandle->GetGrabbedComponent())
 	{
 		FVector targetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
 		physicsHandle->SetTargetLocationAndRotation(targetLocation, GetComponentRotation());
@@ -43,12 +41,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::Release()
 {
 	UPhysicsHandleComponent* physicsHandle = GetPhysicsHandle();
-	if (physicsHandle == nullptr)
+	if (!physicsHandle)
 		return;
 
-	if (physicsHandle->GetGrabbedComponent() != nullptr)
+	UPrimitiveComponent* grabbedComponent = physicsHandle->GetGrabbedComponent();
+	if (grabbedComponent)
 	{
-		physicsHandle->GetGrabbedComponent()->WakeAllRigidBodies();
+		grabbedComponent->GetOwner()->Tags.Remove("Grabbed");
+		grabbedComponent->WakeAllRigidBodies();
 		physicsHandle->ReleaseComponent();
 	}
 
@@ -74,13 +74,13 @@ void UGrabber::Grab()
 {
 	FHitResult hitResult;
 	UPhysicsHandleComponent* physicsHandle = GetPhysicsHandle();
-	if (physicsHandle == nullptr)
-		return;
 
-	if (GetGrabbableInReach(hitResult))
+	if (physicsHandle && GetGrabbableInReach(hitResult))
 	{
 		UPrimitiveComponent* HitComponent = hitResult.GetComponent();
 		HitComponent->WakeAllRigidBodies();
+
+		hitResult.GetActor()->Tags.Add("Grabbed");
 
 		physicsHandle->GrabComponentAtLocationWithRotation(
 			HitComponent,
@@ -94,7 +94,7 @@ void UGrabber::Grab()
 UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
 {
 	UPhysicsHandleComponent* physicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (physicsHandle == nullptr)
+	if (!physicsHandle)
 	{
 		UE_LOG(LogTemp, Display, TEXT("[Grabber] Missing UPhysicsHandleComponent "));
 		return nullptr;

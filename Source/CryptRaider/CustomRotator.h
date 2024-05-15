@@ -4,42 +4,50 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
 #include "ActivableInterface.h"
-#include "Mover.generated.h"
+
+#include "CustomRotator.generated.h"
 
 
-
-
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class CRYPTRAIDER_API UMover : public UActorComponent, public IActivableInterface
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class CRYPTRAIDER_API UCustomRotator : public UActorComponent, public IActivableInterface
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	// Sets default values for this component's properties
-	UMover();
+	UCustomRotator();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
+public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SetShouldMove(bool shouldmove);
+	void SetShouldRotate(bool should);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTarget(USceneComponent* newTarget);
+
 
 	virtual void SetActive(bool active) override;
 
 private:
 	UPROPERTY(EditAnywhere)
-	FVector MoveOffset;
+	FVector RotationOffset;
 
 	UPROPERTY(EditAnywhere)
-	float MoveTime = 4;
+	float RotationTime = 4;
 
-	bool ShouldMove = false;
+	UPROPERTY(EditAnywhere)
+	bool shouldRotate = false;
 
-	FVector OriginalLocation;
+	USceneComponent* target;
+	FRotator OriginalRotation;
+
+	bool activated = false;
 
 };

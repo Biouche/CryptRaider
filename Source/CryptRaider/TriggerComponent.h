@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
-#include "Mover.h"
+#include "ActivableInterface.h"
 #include "TriggerComponent.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class CRYPTRAIDER_API UTriggerComponent : public UBoxComponent
@@ -18,8 +18,6 @@ class CRYPTRAIDER_API UTriggerComponent : public UBoxComponent
 public:
 	UTriggerComponent();
 
-
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -27,14 +25,14 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	UFUNCTION(BlueprintCallable)
-	void SetMover(UMover* mover);
+	void SetTriggeredElement(TScriptInterface <IActivableInterface> mover);
 
 private:
 	UPROPERTY(EditAnywhere)
 	FName UnlockingTag;
-	UMover* mover;
+	TScriptInterface<IActivableInterface>  mover;
 	AActor* GetAcceptableActor() const;
-	
+
 };

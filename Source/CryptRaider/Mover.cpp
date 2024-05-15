@@ -25,6 +25,7 @@ void UMover::BeginPlay()
 
 	OriginalLocation = GetOwner()->GetActorLocation();
 
+
 }
 
 
@@ -36,18 +37,24 @@ void UMover::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponent
 
 	if (ShouldMove)
 	{
+		// Translation
 		FVector CurrentLocation = GetOwner()->GetActorLocation();
 		FVector TargetLocation = OriginalLocation + MoveOffset;
 		float Speed = FVector::Distance(OriginalLocation, TargetLocation) / MoveTime;
 		FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaTime, Speed);
 
 		GetOwner()->SetActorLocation(NewLocation);
-		UE_LOG(LogTemp, Log, TEXT("[Mover] Should move"));
+
 	}
 }
 
 void UMover::SetShouldMove(bool should)
 {
 	ShouldMove = should;
+}
+
+void UMover::SetActive(bool active)
+{
+	ShouldMove = active;
 }
 
